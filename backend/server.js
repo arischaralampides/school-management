@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { sequelize } from "./models/index.js";
 import sequelize from "./config/database.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
@@ -12,14 +13,13 @@ import defineRelationships from "./models/relationships.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Κλήση της συνάρτησης για τον ορισμό των συσχετίσεων
-defineRelationships();
+
 
 // Middleware για JSON
 app.use(express.json());
 app.use(cors())
 
-// Συγχρονισμός της βάσης δεδομένων
+
 
 
 // Routes
@@ -28,8 +28,8 @@ app.use("/api/classes", classRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/grades", gradeRoutes);
-app.use("/api/enrollments-stats", studentRoutes);
-app.use("/api/students/gender-stats", studentRoutes);
+
+
 
 // Σύνδεση με τη βάση δεδομένων και εκκίνηση του server
 (async () => {
