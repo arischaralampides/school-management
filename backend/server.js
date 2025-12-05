@@ -1,14 +1,12 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { sequelize } from "./models/index.js";
-import sequelize from "./config/database.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import gradeRoutes from "./routes/gradeRoutes.js";
-import defineRelationships from "./models/relationships.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +35,9 @@ app.use("/api/grades", gradeRoutes);
     // Έλεγχος σύνδεσης με τη βάση δεδομένων
     await sequelize.authenticate();
     console.log("Database connection has been established successfully.");
+
+     await sequelize.sync({ alter: true });
+    console.log("All models were synchronized successfully.");
 
     // Εκκίνηση του server
     app.listen(PORT, () => {

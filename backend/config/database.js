@@ -1,5 +1,3 @@
-
-
 import { Sequelize } from "sequelize";
 
 const DB_NAME = "school_management";
