@@ -1,0 +1,37 @@
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+
+const Grade = sequelize.define(
+  "Grade",
+  {
+    grade_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    student_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    course_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    grade_value: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    grade_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "grades",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+  }
+);
+
+export default Grade;
