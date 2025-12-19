@@ -1,6 +1,11 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
-  theme: { extend: {} },
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',  // Ενεργοποίηση του dark mode με την προσθήκη της κλάσης 'dark'
+  theme: {
+    extend: {},
+  },
   plugins: [],
 };
