@@ -1,0 +1,23 @@
+import React from 'react';
+import { FaGithub, FaLinkedin } from 'react-icons/fa'; // Αν χρησιμοποιείς react-icons
+
+export default function Footer() {
+  return (
+    <footer className="bg-white shadow-md p-4 flex justify-between items-center">
+      <p>&copy; 2025 arischr. All rights reserved.</p>
+      
+      {/* Social Links */}
+      <div className="space-x-4 flex items-center">
+        {/* GitHub Icon */}
+        <a href="https://github.com/arischaralampides" target='blank' className="text-blue-600 hover:text-blue-800 flex items-center">
+          <FaGithub className="mr-2" /> GitHub
+        </a>
+
+        {/* LinkedIn Icon */}
+        <a href="" target='_blank' className="text-blue-600 hover:text-blue-800 flex items-center">
+          <FaLinkedin className="mr-2" /> LinkedIn
+        </a>
+      </div>
+    </footer>
+  );
+}
