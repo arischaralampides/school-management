@@ -9,7 +9,6 @@ import ThemeToggle from './components/ThemeToggle';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import StudentsTable from './components/Students';
-import Teachers from './components/Teachers';
 import Classes from './components/Classes';
 import Subjects from './components/Subjects';
 import AdminDashboard from './components/AdminDashboard';
