@@ -29,10 +29,13 @@ const Student = sequelize.define('Student', {
     allowNull: false,
   },
   email: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-    unique: true,
-  },
+  type: DataTypes.STRING(255),
+  allowNull: false,
+  unique: true,
+  validate: {
+    isEmail: true
+  }
+},
   class_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
