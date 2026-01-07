@@ -52,6 +52,25 @@ Welcome to the **Students User Management System**! This platform allows you to 
 - **DAO**: Data Transfer Object pattern.
 
 ---
+## Run locally
+## Authentication / Authorization
+Login via POST /api/auth/login.
+JWT token is required for all /api/* endpoints (Bearer token).
+Default seeded admin (only if SEED_ADMIN=true): admin / 123456
+
+### Backend
+cd backend
+npm install
+cp .env.example .env
+npm run dev
+
+Swagger: http://localhost:3000/api-docs
+
+### Frontend
+cd frontend
+npm install
+cp .env.example .env   (or create .env with VITE_API_URL)
+npm run dev
 
 ## Installation
 
