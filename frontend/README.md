@@ -63,3 +63,7 @@ Ensure you have the following installed:
 - **MySQL**  (or any other relational database you're using)
 - **Sequelize CLI** (if you plan to manage models and migrations)
 
+## API Documentation (Swagger)
+After running the backend, open:
+http://localhost:3000/api-docs
+

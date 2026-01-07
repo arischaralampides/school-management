@@ -1,3 +1,5 @@
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger.js";
 import express from "express";
 import cors from "cors";
 import { sequelize } from "./models/index.js";
@@ -16,6 +18,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware για JSON
 app.use(express.json());
 app.use(cors())
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 
