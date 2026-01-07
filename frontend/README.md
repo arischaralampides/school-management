@@ -63,7 +63,15 @@ Ensure you have the following installed:
 - **MySQL**  (or any other relational database you're using)
 - **Sequelize CLI** (if you plan to manage models and migrations)
 
+---
+
 ## API Documentation (Swagger)
-After running the backend, open:
+
+The backend exposes a RESTful API which is documented using **Swagger UI**.
+
+After starting the backend server, you can access the API documentation at:
+
 http://localhost:3000/api-docs
 
+The Swagger interface provides detailed information about all available endpoints,
+including request parameters, request bodies, and responses.
