@@ -59,8 +59,7 @@ Welcome to the **Students User Management System**! This platform allows you to 
 
 Ensure you have the following installed:
 - **Node.js** (v14 or higher)
-- **npm** or **yarn**
-- **MySQL** or **PostgreSQL** (or any other relational database you're using)
+- **npm** 
+- **MySQL**  (or any other relational database you're using)
 - **Sequelize CLI** (if you plan to manage models and migrations)
 
-### Setup for Frontend
