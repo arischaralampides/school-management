@@ -25,9 +25,9 @@ export default function LoginPage({ setIsLoggedIn }) {
       setLoading(false);
       setError("");
       
-      // Εικονικά δεδομένα χρήστη για login (hardcoded)
+      // δεδομένα χρήστη για login 
       const validUsername = "admin";
-      const validPassword = "121203";
+      const validPassword = "123456";
 
       if (username === validUsername && password === validPassword) {
         setIsLoggedIn(true);
