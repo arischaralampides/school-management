@@ -3,9 +3,7 @@
 Welcome to the **Students User Management System**! This platform allows you to efficiently manage students, teachers, classes, and subjects, with functionalities like login, charts, animations, mobile view support, and access control.
  The project is built using **React** for the frontend and **Express.js** for the backend, utilizing **Sequelize ORM** for database interaction.
 
-<p align="center">
-  <img src="frontend/SUMS.png" width="700" alt="Students User Management System Screenshot" />
-</p>
+
 ---
 
 ## Features
