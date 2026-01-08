@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env", override: true });
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger.js";
 import express from "express";
