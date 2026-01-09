@@ -1,97 +1,69 @@
-# Students User Management System
+# School Management System  
+Coding Factory – Final Project
 
-Welcome to the **Students User Management System**! This platform allows you to efficiently manage students, teachers, classes, and subjects, with functionalities like login, charts, animations, mobile view support, and access control.
- The project is built using **React** for the frontend and **Express.js** for the backend, utilizing **Sequelize ORM** for database interaction.
-
+This project is a **full-stack School Management System** developed for the **Coding Factory Final Project**.  
+It consists of a **RESTful backend API** and a **React frontend**.
 
 ---
 
 ## Features
 
-### Frontend Features
-- **Login/Logout**: Secure authentication for users.
-- **Dashboard**: Admin panel to manage students, teachers, classes, and subjects.
-- **User Management**: Add, edit, or view students and teachers in a table format.
-- **Class and Subject Management**: Manage available classes and subjects.
-- **Charts**: Visual representations of data (e.g., student grades, class statistics) using **Chart.js** or **Recharts**.
-- **Animations**: Smooth transitions and animations for better user experience using **Framer Motion** or **React Spring**.
-- **Mobile View Support**: Responsive design that adapts to different screen sizes, ensuring the app is mobile-friendly.
-- **Theme Toggle**: Switch between light and dark themes.
+### Backend
+- RESTful API using **Node.js** and **Express**
+- **MySQL** database
+- **Sequelize ORM**
+- **Sequelize Migrations** for database schema management
+- **JWT Authentication & Authorization**
+- Layered architecture:
+  - Controllers
+  - Services
+  - Repositories
+- **Swagger API Documentation**
 
-### Backend Features
-- **Student Management**: CRUD operations for students.
-- **Teacher Management**: CRUD operations for teachers.
-- **Course Management**: CRUD operations for courses.
-- **Class Management**: Manage class data.
-- **Grade Management**: Manage student grades.
-- **CORS-enabled**: Allows requests from the frontend (running on `http://localhost:5173`).
-- **Database connection**: Utilizes Sequelize ORM to connect to the database.
+### Frontend
+- **React (Vite)**
+- Axios for API communication
+- JWT-based authentication
+- Protected routes
+- CRUD management for:
+  - Students
+  - Teachers
+  - Classes
+  - Subjects
 
 ---
 
 ## Technologies Used
 
-### Frontend:
-- **React**: Frontend framework.
-- **React Router**: For client-side routing.
-- **Tailwind CSS**: For styling and responsive design.
-- **Chart.js** / **Recharts**: For rendering dynamic and interactive charts.
-- **Framer Motion** / **React Spring**: For adding animations and transitions.
-- **State Management**: `useState` for managing the logged-in status.
-- **Axios**: For making API requests to the backend.
-- **CORS**: Cross-Origin Resource Sharing.
-
-### Backend:
-- **Node.js** and **Express.js**: Backend server framework.
-- **Sequelize**: ORM for interacting with the database.
-- **CORS**: Middleware to enable Cross-Origin Resource Sharing.
-- **MySQL/PostgreSQL**: Relational database (configured via Sequelize).
-- **Joi**: Data validation (optional).
-- **MVC**: Model-View-Controller architecture.
-- **DTO**: Data Transfer Object pattern.
-- **DAO**: Data Transfer Object pattern.
-
----
-## Run locally
-## Authentication / Authorization
-Login via POST /api/auth/login.
-JWT token is required for all /api/* endpoints (Bearer token).
-Default seeded admin (only if SEED_ADMIN=true): admin / 123456
-
 ### Backend
-cd backend
-npm install
-cp .env.example .env
-npm run dev
-
-Swagger: http://localhost:3000/api-docs
+- Node.js
+- Express
+- MySQL
+- Sequelize
+- Sequelize CLI
+- JWT
+- Swagger
 
 ### Frontend
-cd frontend
-npm install
-cp .env.example .env   (or create .env with VITE_API_URL)
-npm run dev
-
-## Installation
-
-### Prerequisites
-
-Ensure you have the following installed:
-- **Node.js** (v14 or higher)
-- **npm** 
-- **MySQL**  (or any other relational database you're using)
-- **Sequelize CLI** (if you plan to manage models and migrations)
+- React
+- Vite
+- Axios
+- React Router
 
 ---
 
-## API Documentation (Swagger)
+## Prerequisites
 
-The backend exposes a RESTful API which is documented using **Swagger UI**.
+Before running the project, ensure you have installed:
+- Node.js (v16 or newer)
+- npm
+- MySQL Server
 
-After starting the backend server, you can access the API documentation at:
+---
 
-http://localhost:3000/api-docs
+## Backend Setup
 
-The Swagger interface provides detailed information about all available endpoints,
-including request parameters, request bodies, and responses.
-
+### 1. Install dependencies
+```bash
+cd backend
+npm install
