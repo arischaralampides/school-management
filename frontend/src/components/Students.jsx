@@ -73,10 +73,11 @@ const StudentsTable = () => {
     };
 
     const filteredStudents = students.filter((student) =>
-        `${student.firstName} ${student.lastName} ${student.id} ${student.email}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-    );
+  `${student.first_name || ""} ${student.last_name || ""} ${student.student_id || ""} ${student.email || ""}`
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase())
+);
+
 
     const calculateAverage = (grades) => {
         if (!grades || grades.length === 0) return "-";

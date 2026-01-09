@@ -39,7 +39,10 @@ export default function LoginPage({ setIsLoggedIn }) {
   return (
     <div className="container mx-auto text-center mt-20">
       <div className="mt-12">
-        <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-2xl shadow-md w-96 mx-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-gray-100 p-6 rounded-2xl shadow-md w-96 mx-auto"
+        >
           <h1 className="text-4xl mb-4">Login</h1>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -78,7 +81,7 @@ export default function LoginPage({ setIsLoggedIn }) {
           </button>
 
           <p className="text-sm text-gray-600 mt-4">
-            Seed admin (backend .env): admin / 123456
+            Default admin (seed): <b>admin</b> / <b>123456</b>
           </p>
         </form>
       </div>
