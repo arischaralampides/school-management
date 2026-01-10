@@ -122,6 +122,8 @@ const CoursesTable = () => {
             teacher_id: newCourseData.teacher_id,
         };
 
+        if (!payload.teacher_id) delete payload.teacher_id;
+
         if (!payload.course_name.trim()) {
             toast.error("Course Name is required!");
             return;
