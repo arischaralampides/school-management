@@ -9,6 +9,9 @@ import StudentsCourseTable from "./StudentsCourseTable";
 
 const StudentsTable = () => {
   const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [courses, setCourses] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,22 +27,38 @@ const StudentsTable = () => {
     last_name: "",
     email: "",
     phone: "",
+    gender: "",
+    date_of_birth: "",
+    class_id: "",
   });
 
+  const [selectedCourseIds, setSelectedCourseIds] = useState([]);
+
   const studentIdOf = (s) => s.id ?? s.student_id;
+  const classIdOf = (c) => c.id ?? c.class_id;
+  const courseIdOf = (c) => c.id ?? c.course_id;
+
+  const loadAll = async () => {
+    setLoading(true);
+    try {
+      const [studentsRes, classesRes, coursesRes] = await Promise.all([
+        axios.get("http://localhost:3000/api/students"),
+        axios.get("http://localhost:3000/api/classes"),
+        axios.get("http://localhost:3000/api/courses"),
+      ]);
+      setStudents(studentsRes.data || []);
+      setClasses(classesRes.data || []);
+      setCourses(coursesRes.data || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/students")
-      .then((res) => {
-        setStudents(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error loading students", err);
-        setLoading(false);
-        toast.error("Failed to load students!");
-      });
+    loadAll();
   }, []);
 
   const toggleExpand = (id) => setExpanded((prev) => (prev === id ? null : id));
@@ -68,24 +87,47 @@ const StudentsTable = () => {
 
   const handleEditClick = (student) => {
     setEditingStudent(student);
+
     setEditedStudentData({
       first_name: student.first_name || "",
       last_name: student.last_name || "",
       email: student.email || "",
       phone: student.phone || "",
+      gender: student.gender || "",
+      date_of_birth: student.date_of_birth || "",
+      class_id: student.class_id || "",
     });
+
+    // backend now returns student.courses: [{course_id,...}]
+    const ids = (student.courses || []).map((c) => courseIdOf(c));
+    setSelectedCourseIds(ids);
+  };
+
+  const toggleCourse = (id) => {
+    setSelectedCourseIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
 
   const handleSaveChanges = async () => {
     try {
       const id = studentIdOf(editingStudent);
-      const response = await axios.put(`http://localhost:3000/api/students/${id}`, editedStudentData);
 
-      const updated = response.data;
-      setStudents((prev) => prev.map((s) => (studentIdOf(s) === studentIdOf(updated) ? updated : s)));
+      // 1) update student profile + class
+      const payload = { ...editedStudentData };
+      if (!payload.class_id) delete payload.class_id;
 
+      await axios.put(`http://localhost:3000/api/students/${id}`, payload);
+
+      // 2) set student courses
+      await axios.put(`http://localhost:3000/api/students/${id}/courses`, {
+        course_ids: selectedCourseIds,
+      });
+
+      toast.success("Student updated (class + courses)!");
       setEditingStudent(null);
-      toast.success("Student updated!");
+
+      await loadAll();
     } catch (error) {
       console.error("Error saving changes:", error);
       toast.error(error.response?.data?.message || "Error saving changes.");
@@ -160,6 +202,7 @@ const StudentsTable = () => {
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Average Grades</th>
                   <th className="px-4 py-3">Class</th>
+                  <th className="px-4 py-3">Courses</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -168,6 +211,9 @@ const StudentsTable = () => {
                 {filteredStudents.map((student, index) => {
                   const id = studentIdOf(student);
                   const isOpen = expanded === id;
+
+                  const grades = student.grades || student.studentGrades || [];
+                  const courseNames = (student.courses || []).map((c) => c.course_name).join(", ");
 
                   return (
                     <React.Fragment key={id}>
@@ -182,9 +228,10 @@ const StudentsTable = () => {
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
                         <td className="px-4 py-3 text-sm text-gray-500">
-                          {calculateAverage(student.grades)}
+                          {calculateAverage(grades)}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-500">{student.class || "-"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{courseNames || "-"}</td>
                         <td className="px-4 py-3 space-x-3">
                           <button
                             className="text-blue-500"
@@ -193,7 +240,7 @@ const StudentsTable = () => {
                               handleEditClick(student);
                             }}
                           >
-                            Edit
+                            Edit/Assign
                           </button>
                           <button
                             className="text-red-500"
@@ -217,17 +264,11 @@ const StudentsTable = () => {
                             transition={{ duration: 0.3 }}
                             className="bg-blue-50"
                           >
-                            <td colSpan="6" className="px-6 py-4 text-left text-gray-700">
+                            <td colSpan="7" className="px-6 py-4 text-left text-gray-700">
                               <motion.div layout className="space-y-1">
-                                <div>
-                                  <strong>Student ID:</strong> {id}
-                                </div>
-                                <div>
-                                  <strong>Email:</strong> {student.email || "-"}
-                                </div>
-                                <div>
-                                  <strong>Class:</strong> {student.class || "-"}
-                                </div>
+                                <div><strong>Student ID:</strong> {id}</div>
+                                <div><strong>Class:</strong> {student.class || "-"}</div>
+                                <div><strong>Courses:</strong> {courseNames || "-"}</div>
                               </motion.div>
                             </td>
                           </motion.tr>
@@ -244,7 +285,7 @@ const StudentsTable = () => {
         <StudentsCourseTable students={students} setStudents={setStudents} searchTerm={searchTerm} />
       )}
 
-      {/* Edit Student Modal */}
+      {/* Edit/Assign Modal */}
       <AnimatePresence>
         {editingStudent && (
           <motion.div
@@ -253,8 +294,8 @@ const StudentsTable = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
-              <h2 className="text-2xl font-bold mb-4">Edit Student</h2>
+            <motion.div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+              <h2 className="text-2xl font-bold mb-4">Edit Student / Assign</h2>
 
               <div className="mb-3">
                 <label className="block text-sm font-medium">First Name</label>
@@ -283,7 +324,7 @@ const StudentsTable = () => {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-3">
                 <label className="block text-sm font-medium">Phone</label>
                 <input
                   className="w-full p-2 border rounded"
@@ -292,20 +333,61 @@ const StudentsTable = () => {
                 />
               </div>
 
-              <div className="flex justify-center space-x-4 mt-6">
+              {/* ✅ Assign Class */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium">Class</label>
+                <select
+                  className="w-full p-2 border rounded"
+                  value={editedStudentData.class_id || ""}
+                  onChange={(e) => setEditedStudentData({ ...editedStudentData, class_id: e.target.value })}
+                >
+                  <option value="">— No class —</option>
+                  {classes.map((c) => (
+                    <option key={classIdOf(c)} value={classIdOf(c)}>
+                      {c.class_name} ({c.class_type}) — {c.schedule}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* ✅ Assign Courses */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Courses</label>
+                <div className="max-h-40 overflow-y-auto border rounded p-2">
+                  {courses.map((c) => {
+                    const cid = courseIdOf(c);
+                    const checked = selectedCourseIds.includes(cid);
+                    return (
+                      <label key={cid} className="flex items-center gap-2 py-1">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleCourse(cid)}
+                        />
+                        <span>{c.course_name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tick courses to assign this student. Saving will overwrite the student’s course list.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-6">
                 <motion.button
                   onClick={() => setEditingStudent(null)}
                   className="px-4 py-2 bg-gray-300 rounded-lg"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   Cancel
                 </motion.button>
                 <motion.button
                   onClick={handleSaveChanges}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                 >
                   Save
                 </motion.button>
