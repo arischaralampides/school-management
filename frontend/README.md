@@ -1,76 +1,97 @@
-# School Management System  
-Coding Factory – Final Project
+# 📚 School Management System  
+**Coding Factory – Final Project**
 
-This project is a **full-stack School Management System** developed for the **Coding Factory Final Project**.  
-It consists of a **RESTful backend API** and a **React frontend**.
+A **full-stack School Management System** developed as the **Coding Factory Final Project**.  
+The application consists of a **RESTful backend API** and a **React frontend** for managing students, teachers, classes, courses, and grades.
 
 ---
 
-## Features
+## ✨ Features
 
 ### Backend
-- RESTful API using **Node.js** and **Express**
-- **MySQL** database
+- RESTful API built with **Node.js** and **Express**
+- **MySQL** relational database
 - **Sequelize ORM**
-- **Sequelize Migrations** for database schema management
 - **JWT Authentication & Authorization**
+- Role-based access (Admin)
 - Layered architecture:
   - Controllers
   - Services
-  - Repositories
+  - Repositories (DAO)
+  - DTOs (Data Transfer Objects)
 - **Swagger API Documentation**
+- Automatic admin seeding on first run
 
-### Frontend
-- **React (Vite)**
-- Axios for API communication
-- JWT-based authentication
-- Protected routes
-- CRUD management for:
+#### Backend Functionalities
+- Full CRUD operations for:
   - Students
   - Teachers
   - Classes
-  - Subjects
+  - Courses (Subjects)
+  - Grades
+- Student assignment to:
+  - Classes (one-to-many)
+  - Courses (many-to-many)
+- Teacher assignment to classes and courses
+- Grade management per student and course
+- Statistics endpoints (grades, enrollments)
 
 ---
 
-## Technologies Used
+### Frontend
+- **React (Vite)**
+- **Axios** for API communication
+- **React Router** for navigation
+- JWT-based authentication
+- Protected routes
+- Fully functional UI for:
+  - Students (CRUD + assign classes & courses)
+  - Teachers (CRUD)
+  - Classes (CRUD)
+  - Courses / Subjects (CRUD)
+  - Grades (view & edit)
+
+---
+
+## 🛠 Technologies Used
 
 ### Backend
 - Node.js
 - Express
 - MySQL
 - Sequelize
-- Sequelize CLI
-- JWT
-- Swagger
+- JWT (JSON Web Tokens)
+- Swagger (swagger-ui-express, swagger-jsdoc)
 
 ### Frontend
 - React
 - Vite
 - Axios
 - React Router
+- Tailwind CSS
+- Framer Motion
 
 ---
 
-## Prerequisites
+## 📋 Prerequisites
 
 Before running the project, ensure you have installed:
-- Node.js (v16 or newer)
-- npm
-- MySQL Server
+- **Node.js** v16 or newer
+- **npm**
+- **MySQL Server**
 
 ---
 
-## Backend Setup
+## ⚙️ Backend Setup
 
 ### 1. Install dependencies
 ```bash
 cd backend
 npm install
 
-2. Environment configuration
 
-Create a file backend/.env:
+2. Environment configuration
+Create a file frontend/.env:
 PORT=3000
 
 DB_NAME=school_management
@@ -88,44 +109,70 @@ ADMIN_USERNAME=admin
 ADMIN_PASSWORD=123456
 ADMIN_ROLE=ADMIN
 
-3. Create database and user
-4. Run database migrations
-5. Run backend
-    npm run dev
-    Backend runs at:
-    API:
-    http://localhost:3000
-    Swagger UI:
+3. Create database
+  Tables are created automatically by Sequelize on backend startup.
 
-    http://localhost:3000/api-docs
-    An admin user is automatically created on first run:
-    username: admin
-    password: 123456
-    API Documentation (Swagger)
-    The REST API is documented using Swagger UI.
-    Access it at:
-    http://localhost:3000/api-docs
-    Swagger provides detailed documentation of all endpoints, including request parameters,
-    request bodies, authentication requirements, and responses.
+4. Run backend
+  Backend runs at:
+
+API base URL:
+http://localhost:3000
+
+Swagger UI:
+http://localhost:3000/api-docs
 
 
-Frontend Setup
+5. Default Admin Account
+
+On first run, an admin user is automatically created:
+
+Username: admin
+Password: 123456
+
+
+API Documentation (Swagger)
+
+The REST API is documented using Swagger UI.
+
+Access it at:
+
+http://localhost:3000/api-docs
+
+
+Swagger includes:
+
+All endpoints
+
+Request and response schemas
+
+Authentication requirements
+
+Example payloads
+
+
+
+🖥 Frontend Setup
 1. Install dependencies
-cd frontend
-npm install
-
 2. Environment configuration
 Create a file frontend/.env:
 VITE_API_URL=http://localhost:3000
-
 3. Run frontend
-npm run dev
 Frontend runs at:
 http://localhost:5173
-Authentication
-Login endpoint: POST /api/auth/login
+
+🔐 Authentication
+
+Login endpoint:
+
+POST /api/auth/login
+
+
 Authentication is based on JWT
-All protected API endpoints require:
+
+All protected API endpoints require the header:
+
 Authorization: Bearer <token>
-    
+
+
+The frontend automatically attaches the token after login.
 
