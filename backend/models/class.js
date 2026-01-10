@@ -12,13 +12,13 @@ const Class = sequelize.define('Class', {
     allowNull: false,
   },
   course_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+  type: DataTypes.INTEGER,
+  allowNull: true,
+},
   teacher_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+  type: DataTypes.INTEGER,
+  allowNull: true,
+},
   class_type: {
     type: DataTypes.STRING,
     allowNull: false,

@@ -37,9 +37,9 @@ const Student = sequelize.define('Student', {
   }
 },
   class_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
+  type: DataTypes.INTEGER,
+  allowNull: true, // ✅ allow student without class
+},
   gender: {
     type: DataTypes.STRING,
     allowNull: true,

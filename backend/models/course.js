@@ -16,9 +16,10 @@ const Course = sequelize.define('Course', {
     allowNull: true,
   },
   teacher_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false, 
-  },
+  type: DataTypes.INTEGER,
+  allowNull: true, // ✅ allow course without teacher
+}
+,
 }, {
   tableName: 'courses',
   timestamps: true,
