@@ -10,14 +10,16 @@ export const studentDTO = (student) => ({
   class: student.class ? student.class.class_name : "No class assigned",
   class_id: student.class_id,
 
-  grades: student.studentGrades
-    ? student.studentGrades.map((grade) => ({
-        grade_value: grade.grade_value,
-        course_id: grade.course_id,
-        course_name: grade.course?.course_name || "Unknown course",
-        grade_date: grade.grade_date,
-      }))
-    : [],
+  studentGrades: student.studentGrades
+  ? student.studentGrades.map((grade) => ({
+      grade_id: grade.grade_id,
+      grade_value: grade.grade_value,
+      course_id: grade.course_id,
+      course_name: grade.course?.course_name || "Unknown course",
+      grade_date: grade.grade_date,
+    }))
+  : [],
+
 });
 
 export const studentsListDTO = (students) => students.map(studentDTO);

@@ -11,11 +11,12 @@ export const findAllWithRelations = () =>
     include: [
       { model: Class, attributes: ["class_name"], as: "class" },
       {
-        model: Grade,
-        attributes: ["grade_value", "course_id", "grade_date"],
-        as: "studentGrades",
-        include: [{ model: Course, attributes: ["course_name"], as: "course" }],
-      },
+  model: Grade,
+  attributes: ["grade_id", "grade_value", "course_id", "grade_date"],
+  as: "studentGrades",
+  include: [{ model: Course, attributes: ["course_name"], as: "course" }],
+},
+
     ],
   });
 
@@ -24,11 +25,12 @@ export const findByIdWithRelations = (id) =>
     include: [
       { model: Class, attributes: ["class_name"], as: "class" },
       {
-        model: Grade,
-        attributes: ["grade_value", "course_id", "grade_date"],
-        as: "studentGrades",
-        include: [{ model: Course, attributes: ["course_name"], as: "course" }],
-      },
+  model: Grade,
+  attributes: ["grade_id", "grade_value", "course_id", "grade_date"],
+  as: "studentGrades",
+  include: [{ model: Course, attributes: ["course_name"], as: "course" }],
+},
+
     ],
   });
 
