@@ -9,14 +9,16 @@ import {
   getHighestStats,
 } from "../controllers/gradeController.js";
 
-
 const router = express.Router();
 
 router.post("/", createGrade);
 router.get("/", getAllGrades);
-router.get("/:id", getGradeById);
+
+// ✅ stats MUST be before "/:id"
 router.get("/stats/average", getAverageStats);
 router.get("/stats/highest", getHighestStats);
+
+router.get("/:id", getGradeById);
 router.put("/:id", updateGrade);
 router.delete("/:id", deleteGrade);
 
