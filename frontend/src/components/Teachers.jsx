@@ -110,10 +110,12 @@ const TeachersTable = () => {
     console.log("Edited Teacher Data:", editedTeacherData); // Δείτε τα δεδομένα που στέλνετε
 
     try {
-      const response = await axios.put(`http://localhost:3000/api/teachers/${editingTeacher.id}`, {
-        ...editedTeacherData,
-        course_id: editedTeacherData.course, // Προσθέτουμε το course_id
-      });
+      const response = await axios.put(
+  `http://localhost:3000/api/teachers/${editingTeacher.id}`,
+  {
+    ...editedTeacherData,
+  }
+);
 
       // Ενημερώνουμε την κατάσταση των δασκάλων στο frontend
       setTeachers((prevTeachers) =>

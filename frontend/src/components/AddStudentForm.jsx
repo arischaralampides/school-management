@@ -41,15 +41,25 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
     const { first_name, last_name, email, phone, class_id, date_of_birth, gender } = formData;
 
     try {
-      const res = await axios.post('http://localhost:3000/api/students', {
-        first_name,
-        last_name,
-        email,
-        phone,
-        class_id,
-        date_of_birth,
-        gender
-      });
+      const payload = {
+  first_name,
+  last_name,
+  email,
+  phone,
+  date_of_birth,
+  gender,
+};
+
+// only include class_id if selected
+if (class_id) {
+  payload.class_id = class_id;
+}
+
+const res = await axios.post(
+  'http://localhost:3000/api/students',
+  payload
+);
+
 
       if (res.status === 201 || res.status === 200) {
         toast.success('Student added successfully!');
@@ -177,9 +187,8 @@ const AddStudentForm = ({ setShowAddStudentForm, setStudents }) => {
                     value={formData.class_id}
                     onChange={handleChange}
                     className="p-2 border w-full rounded"
-                    required
                   >
-                    <option value="">Select Class</option>
+                    <option value="">— Assign later —</option>
                     {classes.length > 0 ? (
                       classes.map((cls) => (
                         <option key={cls.class_id} value={cls.class_id}>
