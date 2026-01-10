@@ -1,15 +1,17 @@
+// src/components/Classes.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
+import "react-toastify/dist/ReactToastify.css";
 
 const API = "http://localhost:3000/api";
 
-// ---------- helpers to normalize id fields ----------
+// helpers to tolerate either DTO shape (id) or raw (class_id/course_id/teacher_id)
+const classIdOf = (c) => c?.id ?? c?.class_id;
 const teacherIdOf = (t) => t?.id ?? t?.teacher_id;
 const courseIdOf = (c) => c?.id ?? c?.course_id;
 
-// ---------- Modal shell ----------
 function Modal({ title, children, onClose }) {
   return (
     <motion.div
@@ -38,14 +40,12 @@ function Modal({ title, children, onClose }) {
             ✕
           </button>
         </div>
-
         {children}
       </motion.div>
     </motion.div>
   );
 }
 
-// ---------- Form (used by Add/Edit) ----------
 function ClassForm({
   mode, // "create" | "edit"
   teachers,
@@ -55,7 +55,7 @@ function ClassForm({
   onSubmit,
 }) {
   const [formData, setFormData] = useState(() => ({
-    class_name: initialValues?.class_name ?? "",
+    class_name: initialValues?.class_name ?? initialValues?.name ?? "",
     class_type: initialValues?.class_type ?? "",
     schedule: initialValues?.schedule ?? "",
     teacher_id: initialValues?.teacher_id ?? "",
@@ -64,7 +64,7 @@ function ClassForm({
 
   useEffect(() => {
     setFormData({
-      class_name: initialValues?.class_name ?? "",
+      class_name: initialValues?.class_name ?? initialValues?.name ?? "",
       class_type: initialValues?.class_type ?? "",
       schedule: initialValues?.schedule ?? "",
       teacher_id: initialValues?.teacher_id ?? "",
@@ -80,27 +80,18 @@ function ClassForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // basic required fields (based on your model)
-    if (!formData.class_name.trim()) {
-      toast.error("Class name is required.");
-      return;
-    }
-    if (!formData.class_type.trim()) {
-      toast.error("Class type is required.");
-      return;
-    }
-    if (!formData.schedule.trim()) {
-      toast.error("Schedule is required.");
-      return;
-    }
+    // required (matches your backend model: allowNull false)
+    if (!formData.class_name.trim()) return toast.error("Class name is required.");
+    if (!formData.class_type.trim()) return toast.error("Class type is required.");
+    if (!formData.schedule.trim()) return toast.error("Schedule is required.");
 
-    // build payload, omit optional FKs if not chosen
     const payload = {
       class_name: formData.class_name.trim(),
       class_type: formData.class_type.trim(),
       schedule: formData.schedule.trim(),
     };
 
+    // optional FKs
     if (formData.teacher_id) payload.teacher_id = Number(formData.teacher_id);
     if (formData.course_id) payload.course_id = Number(formData.course_id);
 
@@ -204,24 +195,12 @@ export default function Classes() {
   const [courses, setCourses] = useState([]);
 
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
 
   // modals
   const [showCreate, setShowCreate] = useState(false);
-  const [editing, setEditing] = useState(null); // class object
-  const [deleting, setDeleting] = useState(null); // class object
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return classes;
-    return classes.filter((c) => {
-      const name = (c.class_name ?? c.name ?? "").toLowerCase();
-      const type = (c.class_type ?? "").toLowerCase();
-      const sched = (c.schedule ?? "").toLowerCase();
-      return name.includes(q) || type.includes(q) || sched.includes(q);
-    });
-  }, [classes, search]);
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
 
   const loadAll = async () => {
     setLoading(true);
@@ -232,16 +211,11 @@ export default function Classes() {
         axios.get(`${API}/courses`),
       ]);
 
-      // classes from backend might be DTO or raw; support both:
-      const cls = clsRes.data ?? [];
-      const t = tRes.data ?? [];
-      const c = cRes.data ?? [];
-
-      setClasses(cls);
-      setTeachers(t);
-      setCourses(c);
+      setClasses(clsRes.data ?? []);
+      setTeachers(tRes.data ?? []);
+      setCourses(cRes.data ?? []);
     } catch (err) {
-      console.error("Failed to load classes/teachers/courses", err);
+      console.error("Failed to load data:", err);
       toast.error(err.response?.data?.message || "Failed to load data.");
     } finally {
       setLoading(false);
@@ -252,14 +226,22 @@ export default function Classes() {
     loadAll();
   }, []);
 
-  const classIdOf = (cls) => cls?.class_id ?? cls?.id;
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return classes;
+
+    return classes.filter((c) => {
+      const name = (c.class_name ?? c.name ?? "").toLowerCase();
+      const type = (c.class_type ?? "").toLowerCase();
+      const sched = (c.schedule ?? "").toLowerCase();
+      return name.includes(q) || type.includes(q) || sched.includes(q);
+    });
+  }, [classes, search]);
 
   const teacherNameFor = (cls) => {
-    // if DTO provides nested teacher:
     if (cls?.teacher?.first_name || cls?.teacher?.last_name) {
       return `${cls.teacher.first_name ?? ""} ${cls.teacher.last_name ?? ""}`.trim();
     }
-    // otherwise find by teacher_id:
     const tid = cls?.teacher_id;
     if (!tid) return "—";
     const t = teachers.find((x) => teacherIdOf(x) === tid);
@@ -267,62 +249,56 @@ export default function Classes() {
   };
 
   const courseNameFor = (cls) => {
-    // if DTO provides nested course:
-    if (cls?.course?.name || cls?.course?.course_name) {
-      return cls.course.name ?? cls.course.course_name;
+    if (cls?.course?.course_name || cls?.course?.name) {
+      return cls.course.course_name ?? cls.course.name;
     }
-    // otherwise find by course_id:
     const cid = cls?.course_id;
     if (!cid) return "—";
     const c = courses.find((x) => courseIdOf(x) === cid);
     return c ? c.course_name ?? c.name : "—";
   };
 
-  // ---------- CRUD handlers ----------
+  // CRUD handlers
   const handleCreate = async (payload) => {
     try {
-      const res = await axios.post(`${API}/classes`, payload);
+      await axios.post(`${API}/classes`, payload);
       toast.success("Class created!");
       setShowCreate(false);
-
-      // best: reload to get relations/DTOs consistent
       await loadAll();
-
-      // if you prefer optimistic add:
-      // setClasses((prev) => [...prev, res.data]);
     } catch (err) {
-      console.error("Create class failed", err);
+      console.error("Create class failed:", err);
       toast.error(err.response?.data?.message || "Failed to create class.");
     }
   };
 
-  const handleUpdate = async (classId, payload) => {
+  const handleUpdate = async (id, payload) => {
     try {
-      await axios.put(`${API}/classes/${classId}`, payload);
+      await axios.put(`${API}/classes/${id}`, payload);
       toast.success("Class updated!");
       setEditing(null);
       await loadAll();
     } catch (err) {
-      console.error("Update class failed", err);
+      console.error("Update class failed:", err);
       toast.error(err.response?.data?.message || "Failed to update class.");
     }
   };
 
-  const handleDelete = async (classId) => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API}/classes/${classId}`);
+      await axios.delete(`${API}/classes/${id}`);
       toast.success("Class deleted!");
       setDeleting(null);
-      setClasses((prev) => prev.filter((c) => classIdOf(c) !== classId));
+      setClasses((prev) => prev.filter((c) => classIdOf(c) !== id));
     } catch (err) {
-      console.error("Delete class failed", err);
+      console.error("Delete class failed:", err);
       toast.error(err.response?.data?.message || "Failed to delete class.");
     }
   };
 
-  // ---------- render ----------
   return (
     <div className="p-6">
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
         <div>
           <h1 className="text-2xl font-bold">Classes</h1>
@@ -373,9 +349,7 @@ export default function Classes() {
                   const id = classIdOf(cls);
                   return (
                     <tr key={id} className="border-t">
-                      <td className="px-4 py-3 font-medium">
-                        {cls.class_name ?? cls.name}
-                      </td>
+                      <td className="px-4 py-3 font-medium">{cls.class_name ?? cls.name}</td>
                       <td className="px-4 py-3">{cls.class_type ?? "—"}</td>
                       <td className="px-4 py-3">{cls.schedule ?? "—"}</td>
                       <td className="px-4 py-3">{teacherNameFor(cls)}</td>
@@ -384,7 +358,6 @@ export default function Classes() {
                         <button
                           className="text-blue-600 hover:underline"
                           onClick={() => {
-                            // normalize initial values for edit form
                             setEditing({
                               ...cls,
                               teacher_id:
@@ -400,6 +373,7 @@ export default function Classes() {
                         >
                           Edit
                         </button>
+
                         <button
                           className="text-red-600 hover:underline"
                           onClick={() => setDeleting(cls)}
@@ -454,10 +428,7 @@ export default function Classes() {
           <Modal title="Delete Class" onClose={() => setDeleting(null)}>
             <p className="text-gray-700">
               Are you sure you want to delete{" "}
-              <span className="font-semibold">
-                {deleting.class_name ?? deleting.name}
-              </span>
-              ?
+              <span className="font-semibold">{deleting.class_name ?? deleting.name}</span>?
             </p>
 
             <div className="flex justify-end gap-2 mt-5">
