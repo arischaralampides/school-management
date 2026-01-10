@@ -1,8 +1,22 @@
 import * as repo from "../repositories/classRepository.js";
+import {
+  classDTO,
+  classesListDTO,
+  createClassInputDTO,
+  updateClassInputDTO,
+} from "../DTO/classesDTO.js";
 
-export const createClass = (dto) => repo.create(dto);
+export const createClass = async (body) => {
+  const payload = createClassInputDTO(body);
+  const created = await repo.create(payload);
+  const full = await repo.findByIdWithRelations(created.class_id);
+  return classDTO(full);
+};
 
-export const getAllClasses = () => repo.findAllWithRelations();
+export const getAllClasses = async () => {
+  const classes = await repo.findAllWithRelations();
+  return classesListDTO(classes);
+};
 
 export const getClassById = async (id) => {
   const cls = await repo.findByIdWithRelations(id);
@@ -11,19 +25,25 @@ export const getClassById = async (id) => {
     err.status = 404;
     throw err;
   }
-  return cls;
+  return classDTO(cls);
 };
 
-export const updateClass = async (id, dto) => {
+export const updateClass = async (id, body) => {
   const cls = await repo.findById(id);
   if (!cls) {
     const err = new Error("Class not found");
     err.status = 404;
     throw err;
   }
-  Object.assign(cls, dto);
+
+  const payload = updateClassInputDTO(body);
+  Object.keys(payload).forEach((k) => {
+    if (payload[k] !== undefined) cls[k] = payload[k];
+  });
+
   await cls.save();
-  return cls;
+  const full = await repo.findByIdWithRelations(id);
+  return classDTO(full);
 };
 
 export const deleteClass = async (id) => {

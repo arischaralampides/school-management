@@ -1,64 +1,25 @@
-import * as service from "../services/studentService.js";
+import Teacher from "../models/teacher.js";
+import Class from "../models/class.js";
+import Course from "../models/course.js";
 
-export const getGenderStats = async (req, res) => {
-  try {
-    const stats = await service.getGenderStats();
-    res.json(stats);
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+export const create = (data) => Teacher.create(data);
 
-export const getEnrollmentStats = async (req, res) => {
-  try {
-    const stats = await service.getEnrollmentStats();
-    res.json(stats);
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+export const findAllWithRelations = () =>
+  Teacher.findAll({
+    include: [
+      { model: Class, as: "teacherClasses" },
+      { model: Course, as: "teacherCourses" },
+    ],
+  });
 
-export const createStudent = async (req, res) => {
-  try {
-    const newStudent = await service.createStudent(req.body);
-    res.status(201).json(newStudent);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+export const findById = (id) => Teacher.findByPk(id);
 
-export const getAllStudents = async (req, res) => {
-  try {
-    const students = await service.getAllStudents();
-    res.status(200).json(students);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+export const findByIdWithRelations = (id) =>
+  Teacher.findByPk(id, {
+    include: [
+      { model: Class, as: "teacherClasses" },
+      { model: Course, as: "teacherCourses" },
+    ],
+  });
 
-export const getStudentById = async (req, res) => {
-  try {
-    const student = await service.getStudentById(req.params.id);
-    res.status(200).json(student);
-  } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
-  }
-};
-
-export const updateStudent = async (req, res) => {
-  try {
-    const updated = await service.updateStudent(req.params.id, req.body);
-    res.status(200).json(updated);
-  } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
-  }
-};
-
-export const deleteStudent = async (req, res) => {
-  try {
-    await service.deleteStudent(req.params.id);
-    res.status(200).json({ message: "Student has been deleted" });
-  } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
-  }
-};
+export const remove = (teacher) => teacher.destroy();

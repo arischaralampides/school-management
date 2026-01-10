@@ -23,7 +23,12 @@ export const findByIdWithRelations = (id) =>
   Student.findByPk(id, {
     include: [
       { model: Class, attributes: ["class_name"], as: "class" },
-      { model: Grade, attributes: ["grade_value", "course_id", "grade_date"], as: "grades" },
+      {
+        model: Grade,
+        attributes: ["grade_value", "course_id", "grade_date"],
+        as: "studentGrades",
+        include: [{ model: Course, attributes: ["course_name"], as: "course" }],
+      },
     ],
   });
 

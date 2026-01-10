@@ -1,25 +1,58 @@
-import Teacher from "../models/teacher.js";
-import Class from "../models/class.js";
-import Course from "../models/course.js";
+import * as repo from "../repositories/teacherRepository.js";
+import {
+  teacherDTO,
+  teachersListDTO,
+  createTeacherInputDTO,
+  updateTeacherInputDTO,
+} from "../DTO/teachersDTO.js";
 
-export const create = (data) => Teacher.create(data);
+export const createTeacher = async (body) => {
+  const payload = createTeacherInputDTO(body);
+  const created = await repo.create(payload);
+  const full = await repo.findByIdWithRelations(created.teacher_id);
+  return teacherDTO(full);
+};
 
-export const findAllWithRelations = () =>
-  Teacher.findAll({
-    include: [
-      { model: Class, as: "classes" },   // if you have alias, keep it
-      { model: Course, as: "courses" },  // if you have alias, keep it
-    ],
+export const getAllTeachers = async () => {
+  const teachers = await repo.findAllWithRelations();
+  return teachersListDTO(teachers);
+};
+
+export const getTeacherById = async (id) => {
+  const teacher = await repo.findByIdWithRelations(id);
+  if (!teacher) {
+    const err = new Error("Teacher not found");
+    err.status = 404;
+    throw err;
+  }
+  return teacherDTO(teacher);
+};
+
+export const updateTeacher = async (id, body) => {
+  const teacher = await repo.findById(id);
+  if (!teacher) {
+    const err = new Error("Teacher not found");
+    err.status = 404;
+    throw err;
+  }
+
+  const payload = updateTeacherInputDTO(body);
+  Object.keys(payload).forEach((k) => {
+    if (payload[k] !== undefined) teacher[k] = payload[k];
   });
 
-export const findById = (id) => Teacher.findByPk(id);
+  await teacher.save();
+  const full = await repo.findByIdWithRelations(id);
+  return teacherDTO(full);
+};
 
-export const findByIdWithRelations = (id) =>
-  Teacher.findByPk(id, {
-    include: [
-      { model: Class, as: "classes" },
-      { model: Course, as: "courses" },
-    ],
-  });
-
-export const remove = (teacher) => teacher.destroy();
+export const deleteTeacher = async (id) => {
+  const teacher = await repo.findById(id);
+  if (!teacher) {
+    const err = new Error("Teacher not found");
+    err.status = 404;
+    throw err;
+  }
+  await repo.remove(teacher);
+  return true;
+};

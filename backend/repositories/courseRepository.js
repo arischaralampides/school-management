@@ -7,7 +7,7 @@ export const create = (data) => Course.create(data);
 export const findAllWithRelations = () =>
   Course.findAll({
     include: [
-      { model: Teacher, as: "teacher" }, // if your association uses a different alias, change it
+      { model: Teacher, as: "teacher" },
       { model: Grade, as: "grades" },
     ],
   });

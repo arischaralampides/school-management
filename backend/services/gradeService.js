@@ -1,8 +1,22 @@
 import * as repo from "../repositories/gradeRepository.js";
+import {
+  gradeDTO,
+  gradesListDTO,
+  createGradeInputDTO,
+  updateGradeInputDTO,
+} from "../DTO/gradesDTO.js";
 
-export const createGrade = (dto) => repo.create(dto);
+export const createGrade = async (body) => {
+  const payload = createGradeInputDTO(body);
+  const created = await repo.create(payload);
+  const full = await repo.findByIdWithRelations(created.grade_id);
+  return gradeDTO(full);
+};
 
-export const getAllGrades = () => repo.findAllWithRelations();
+export const getAllGrades = async () => {
+  const grades = await repo.findAllWithRelations();
+  return gradesListDTO(grades);
+};
 
 export const getGradeById = async (id) => {
   const grade = await repo.findByIdWithRelations(id);
@@ -11,19 +25,25 @@ export const getGradeById = async (id) => {
     err.status = 404;
     throw err;
   }
-  return grade;
+  return gradeDTO(grade);
 };
 
-export const updateGrade = async (id, dto) => {
+export const updateGrade = async (id, body) => {
   const grade = await repo.findById(id);
   if (!grade) {
     const err = new Error("Grade not found");
     err.status = 404;
     throw err;
   }
-  Object.assign(grade, dto);
+
+  const payload = updateGradeInputDTO(body);
+  Object.keys(payload).forEach((k) => {
+    if (payload[k] !== undefined) grade[k] = payload[k];
+  });
+
   await grade.save();
-  return grade;
+  const full = await repo.findByIdWithRelations(id);
+  return gradeDTO(full);
 };
 
 export const deleteGrade = async (id) => {
@@ -37,5 +57,6 @@ export const deleteGrade = async (id) => {
   return true;
 };
 
+// Stats endpoints
 export const getAverageStats = () => repo.getAverageByCourse();
 export const getHighestStats = () => repo.getHighestByCourse();
