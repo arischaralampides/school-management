@@ -9,6 +9,7 @@ import {
   getGenderStats,
 } from "../controllers/studentController.js";
 import { createGrade } from "../controllers/gradeController.js";
+import { setCoursesForStudent, getCoursesForStudent } from "../controllers/studentController.js";
 const router = express.Router();
 
 // Στατιστικά φύλου
@@ -21,6 +22,8 @@ router.post("/grades", createGrade);
 // Προϋπάρχοντα routes για μαθητές
 router.post("/", createStudent);
 router.get("/", getAllStudents);
+router.get("/:id/courses", getCoursesForStudent);
+router.put("/:id/courses", setCoursesForStudent);
 router.get("/:id", getStudentById);
 router.put("/:id", updateStudent);
 router.delete("/:id", deleteStudent);

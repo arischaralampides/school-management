@@ -6,32 +6,31 @@ import { Op } from "sequelize";
 
 export const create = (data) => Student.create(data);
 
+const includes = [
+  { model: Class, attributes: ["class_name"], as: "class" },
+  {
+    model: Grade,
+    attributes: ["grade_id", "grade_value", "course_id", "grade_date"],
+    as: "studentGrades",
+    include: [{ model: Course, attributes: ["course_name"], as: "course" }],
+  },
+  // ✅ include many-to-many courses
+  {
+    model: Course,
+    as: "courses",
+    attributes: ["course_id", "course_name"],
+    through: { attributes: [] }, // hide join table fields
+  },
+];
+
 export const findAllWithRelations = () =>
   Student.findAll({
-    include: [
-      { model: Class, attributes: ["class_name"], as: "class" },
-      {
-  model: Grade,
-  attributes: ["grade_id", "grade_value", "course_id", "grade_date"],
-  as: "studentGrades",
-  include: [{ model: Course, attributes: ["course_name"], as: "course" }],
-},
-
-    ],
+    include: includes,
   });
 
 export const findByIdWithRelations = (id) =>
   Student.findByPk(id, {
-    include: [
-      { model: Class, attributes: ["class_name"], as: "class" },
-      {
-  model: Grade,
-  attributes: ["grade_id", "grade_value", "course_id", "grade_date"],
-  as: "studentGrades",
-  include: [{ model: Course, attributes: ["course_name"], as: "course" }],
-},
-
-    ],
+    include: includes,
   });
 
 export const findById = (id) => Student.findByPk(id);

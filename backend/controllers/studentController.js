@@ -62,3 +62,28 @@ export const deleteStudent = async (req, res) => {
     res.status(err.status || 500).json({ message: err.message });
   }
 };
+
+export const setCoursesForStudent = async (req, res) => {
+  try {
+    const { course_ids } = req.body;
+
+    if (!Array.isArray(course_ids)) {
+      return res.status(400).json({ message: "course_ids must be an array" });
+    }
+
+    const updated = await service.setStudentCourses(req.params.id, course_ids);
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+export const getCoursesForStudent = async (req, res) => {
+  try {
+    const courses = await service.getStudentCourses(req.params.id);
+    res.status(200).json(courses);
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+

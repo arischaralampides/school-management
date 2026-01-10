@@ -60,3 +60,32 @@ export const deleteStudent = async (id) => {
 // Stats (raw is fine)
 export const getGenderStats = () => repo.genderCounts();
 export const getEnrollmentStats = () => repo.monthlyEnrollmentCounts(new Date().getFullYear());
+export const setStudentCourses = async (id, courseIds) => {
+  const student = await repo.findById(id);
+  if (!student) {
+    const err = new Error("Student not found");
+    err.status = 404;
+    throw err;
+  }
+
+  // Sequelize belongsToMany gives you setCourses()
+  await student.setCourses(courseIds);
+
+  const full = await repo.findByIdWithRelations(id);
+  return studentDTO(full);
+};
+
+export const getStudentCourses = async (id) => {
+  const student = await repo.findByIdWithRelations(id);
+  if (!student) {
+    const err = new Error("Student not found");
+    err.status = 404;
+    throw err;
+  }
+  return (student.courses || []).map((c) => ({
+    id: c.course_id,
+    course_id: c.course_id,
+    course_name: c.course_name,
+  }));
+};
+
