@@ -85,9 +85,7 @@ Before running the project, ensure you have installed:
 ## ⚙️ Backend Setup
 
 ### 1. Install dependencies
-```bash
-cd backend
-npm install
+
 
 
 2. Environment configuration
