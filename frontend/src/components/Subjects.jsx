@@ -60,6 +60,21 @@ const CoursesTable = () => {
         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     };
 
+    const handleDeleteCourse = async (courseId) => {
+  const ok = window.confirm("Delete this course?");
+  if (!ok) return;
+
+  try {
+    await axios.delete(`http://localhost:3000/api/courses/${courseId}`);
+    setCourses((prev) => prev.filter((c) => c.course_id !== courseId));
+    toast.success("Course deleted!");
+  } catch (err) {
+    console.error("Error deleting course:", err);
+    toast.error(err.response?.data?.message || "Failed to delete course.");
+  }
+};
+
+
     const filteredCourses = courses.filter((course) =>
         course.course_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -218,17 +233,28 @@ const CoursesTable = () => {
                                                     ? `${course.teacher.first_name} ${course.teacher.last_name}`
                                                     : "N/A"}
                                             </td>
-                                            <td className="px-4 py-3">
-                                                <button
-                                                    className="text-blue-500"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleEditClick(course);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
+                                            <td className="px-4 py-3 space-x-3">
+                                            <button
+                                                className="text-blue-500"
+                                                onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditClick(course);
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                className="text-red-500"
+                                                onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteCourse(course.course_id);
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
                                             </td>
+
                                         </motion.tr>
                                         <AnimatePresence>
                                             {isOpen && (

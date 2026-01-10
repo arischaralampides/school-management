@@ -92,6 +92,21 @@ const TeachersTable = () => {
       .includes(searchTerm.toLowerCase())
   );
 
+  const handleDeleteTeacher = async (teacherId) => {
+  const ok = window.confirm("Delete this teacher?");
+  if (!ok) return;
+
+  try {
+    await axios.delete(`http://localhost:3000/api/teachers/${teacherId}`);
+    setTeachers((prev) => prev.filter((t) => t.id !== teacherId));
+    toast.success("Teacher deleted!");
+  } catch (err) {
+    console.error("Error deleting teacher:", err);
+    toast.error(err.response?.data?.message || "Failed to delete teacher.");
+  }
+};
+
+
   const handleEditClick = (teacher) => {
     console.log("Editing teacher:", teacher);
 
@@ -221,17 +236,28 @@ const TeachersTable = () => {
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.email || "-"}</td>
                       <td className="px-4 py-3 text-sm text-gray-500">{teacher.phone || "-"}</td>
                       <td className="px-4 py-3 text-sm">{teacher.id || "-"}</td>
-                      <td className="px-4 py-3">
-                        <button
-                          className="text-blue-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditClick(teacher);
-                          }}
-                        >
-                          Edit
-                        </button>
-                      </td>
+                      <td className="px-4 py-3 space-x-3">
+                      <button
+                        className="text-blue-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(teacher);
+                        }}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTeacher(teacher.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+
                     </motion.tr>
                     <AnimatePresence>
                       {isOpen && (

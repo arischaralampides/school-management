@@ -14,27 +14,30 @@ const StudentsCourseTable = ({ students, setStudents, searchTerm = "" }) => {
     };
 
     const handleSaveClick = async (studentId, gradeIndex) => {
-        try {
-            // Update the grade in the backend
-            const updatedStudents = [...students];
-            const student = updatedStudents.find((s) => s.student_id === studentId);
-            student.studentGrades[gradeIndex].grade_value = newGradeValue;
+  try {
+    const updatedStudents = [...students];
+    const student = updatedStudents.find((s) => s.student_id === studentId);
 
-            // Send the updated grade to the backend
-            await axios.put(`http://localhost:3000/api/grades/${studentId}`, {
-                gradeIndex,
-                grade_value: newGradeValue,
-            });
+    const grade = student.studentGrades[gradeIndex];
+    const gradeId = grade.grade_id; // ✅ must exist in data
 
-            // Update the state
-            setStudents(updatedStudents);
-            setEditingGrade(null); // Exit editing mode
-            toast.success("Grade updated successfully!");
-        } catch (error) {
-            console.error("Error updating grade:", error);
-            toast.error("Failed to update grade. Please try again.");
-        }
-    };
+    // update locally
+    grade.grade_value = newGradeValue;
+
+    // send correct update
+    await axios.put(`http://localhost:3000/api/grades/${gradeId}`, {
+      grade_value: newGradeValue,
+    });
+
+    setStudents(updatedStudents);
+    setEditingGrade(null);
+    toast.success("Grade updated successfully!");
+  } catch (error) {
+    console.error("Error updating grade:", error);
+    toast.error("Failed to update grade. Please try again.");
+  }
+};
+
 
     const handleBlur = (studentId, gradeIndex) => {
         setEditingGrade(null); // Exit editing mode

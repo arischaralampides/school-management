@@ -95,6 +95,21 @@ const StudentsTable = () => {
         });
     };
 
+    const handleDeleteStudent = async (studentId) => {
+  const ok = window.confirm("Delete this student?");
+  if (!ok) return;
+
+  try {
+    await axios.delete(`http://localhost:3000/api/students/${studentId}`);
+    setStudents((prev) => prev.filter((s) => s.student_id !== studentId));
+    toast.success("Student deleted!");
+  } catch (err) {
+    console.error("Error deleting student:", err);
+    toast.error(err.response?.data?.message || "Failed to delete student.");
+  }
+};
+
+
     const handleSaveChanges = async () => {
         try {
             console.log("Editing student:", editingStudent);
@@ -202,18 +217,28 @@ const StudentsTable = () => {
                                                 <td className="px-4 py-3 text-sm text-gray-500">{student.email || "-"}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-500">{calculateAverage(student.studentGrades)}</td>
                                                 <td className="px-4 py-3 text-sm text-gray-500">{student.class?.class_name || "-"}</td>
-                                                <td className="px-4 py-3">
-                                                    <button
-                                                        className="text-blue-500"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleEditClick(student);
-                                                        }}
-                                                    >
-                                                        Edit
+                                                <td className="px-4 py-3 space-x-3">
+                                                <button
+                                                    className="text-blue-500"
+                                                    onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditClick(student);
+                                                }}
+                                                >
+                                                Edit
                                                     </button>
 
-                                                </td>
+                                                    <button
+                                                    className="text-red-500"
+                                                    onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteStudent(student.student_id);
+                                                    }}
+                                                    >
+                                                     Delete
+                                                    </button>
+                                                    </td>
+
                                             </motion.tr>
                                             <AnimatePresence>
                                                 {isOpen && (
